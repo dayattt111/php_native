@@ -8,6 +8,7 @@ spl_autoload_register(function ($class) {
      }
 });
 
+require_once __DIR__ . '/../app/Helpers.php';
 include_once __DIR__ . '/../config/database.php';
 $routes = include __DIR__ . '/../routes.php';
 
@@ -18,18 +19,27 @@ if ($base !== '/' && strpos($uri, $base) === 0) {
 }
 if ($uri === '' || $uri === false) $uri = '/';
 
-if (isset($routes[$uri])) {
-     list($controller, $method) = $routes[$uri];
-     if (class_exists($controller)) {
-          $obj = new $controller();
-          if (method_exists($obj, $method)) {
-               $obj->$method();
-               exit;
+$method = $_SERVER['REQUEST_METHOD'];
+
+// Routing mirip Laravel: dukung GET/POST dan parameter
+$found = false;
+foreach ($routes as $route => $action) {
+     $pattern = preg_replace('#\{[^/]+\}#', '([^/]+)', $route);
+     $pattern = "#^" . $pattern . "$#";
+     if (preg_match($pattern, $uri, $matches)) {
+          array_shift($matches);
+          list($controller, $func) = $action;
+          if (class_exists($controller)) {
+               $obj = new $controller();
+               if (method_exists($obj, $func)) {
+                    call_user_func_array([$obj, $func], $matches);
+                    $found = true;
+                    break;
+               }
           }
      }
-     http_response_code(500);
-     echo "Controller atau method tidak ditemukan.";
-} else {
+}
+if (!$found) {
      http_response_code(404);
      echo "404 Not Found";
 }
