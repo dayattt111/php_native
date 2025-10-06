@@ -28,22 +28,17 @@ project/
     ```
 
 2. **Konfigurasi Database**
-    - Edit file `config/database.php` sesuai dengan kredensial MySQL Anda.
-
-    ```php
-    <?php
-    $host = 'localhost';
-    $user = 'root';
-    $pass = '';
-    $db   = 'nama_database';
-
-    $conn = mysqli_connect($host, $user, $pass, $db);
-
-    if (!$conn) {
-         die("Koneksi gagal: " . mysqli_connect_error());
-    }
-    ?>
-    ```
+    - Copy file `.env.example` menjadi `.env`:
+      ```bash
+      cp .env.example .env
+      ```
+    - Edit file `.env` sesuai dengan kredensial MySQL Anda:
+      ```env
+      DB_HOST=localhost
+      DB_USER=root
+      DB_PASS=
+      DB_NAME=nama_database
+      ```
 
 3. **Jalankan Aplikasi**
     - Akses `public/index.php` melalui browser.
